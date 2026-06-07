@@ -1,0 +1,37 @@
+-- Tabla de usuarios (login + roles)
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    rol ENUM('admin', 'vendedor', 'cliente') NOT NULL
+);
+
+-- Tabla de autos (entidad principal para el CRUD)
+CREATE TABLE autos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    marca VARCHAR(50) NOT NULL,
+    modelo VARCHAR(50) NOT NULL,
+    anio INT NOT NULL,
+    precio DECIMAL(12,2) NOT NULL,
+    color VARCHAR(30),
+    kilometraje INT DEFAULT 0,
+    estado ENUM('disponible', 'reservado', 'vendido') DEFAULT 'disponible',
+    id_vendedor INT,
+    FOREIGN KEY (id_vendedor) REFERENCES usuarios(id)
+);
+
+-- Tabla de consultas (clientes preguntan sobre autos)
+CREATE TABLE consultas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    id_auto INT NOT NULL,
+    id_vendedor INT,
+    mensaje TEXT NOT NULL,
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    estado ENUM('pendiente', 'respondida') DEFAULT 'pendiente',
+    FOREIGN KEY (id_cliente) REFERENCES usuarios(id),
+    FOREIGN KEY (id_auto) REFERENCES autos(id),
+    FOREIGN KEY (id_vendedor) REFERENCES usuarios(id)
+);
