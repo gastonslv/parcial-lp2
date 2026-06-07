@@ -1,0 +1,46 @@
+-- Usuarios de prueba (contraseñas encriptadas con MD5 por ahora)
+-- La password de todos es "1234" encriptada
+INSERT INTO usuarios (nombre, apellido, email, password, rol) VALUES
+('Carlos', 'Gomez', 'admin@concesionario.com', MD5('1234'), 'admin'),
+('Laura', 'Martinez', 'vendedor@concesionario.com', MD5('1234'), 'vendedor'),
+('Pedro', 'Lopez', 'cliente@concesionario.com', MD5('1234'), 'cliente');
+
+-- Autos de prueba
+INSERT INTO autos (marca, modelo, anio, precio, color, kilometraje, estado, id_vendedor) VALUES
+('Toyota', 'Corolla', 2022, 18500000.00, 'Blanco', 15000, 'disponible', 2),
+('Ford', 'Focus', 2021, 15200000.00, 'Negro', 32000, 'disponible', 2),
+('Chevrolet', 'Onix', 2023, 12000000.00, 'Rojo', 0, 'disponible', 2),
+('Volkswagen', 'Golf', 2020, 16800000.00, 'Gris', 45000, 'vendido', 2),
+('Honda', 'Civic', 2022, 20100000.00, 'Azul', 8000, 'reservado', 2);
+
+-- Consultas de prueba
+INSERT INTO consultas (id_cliente, id_auto, id_vendedor, mensaje) VALUES
+(3, 1, 2, '¿El Toyota Corolla tiene garantía incluida?'),
+(3, 3, 2, 'Me interesa el Onix, ¿aceptan permuta?');
+
+-- ============================================================
+-- ENCRIPTACIÓN DE CONTRASEÑAS CON MD5
+-- ============================================================
+-- MD5 (Message-Digest Algorithm 5) es una función de hash que
+-- convierte un texto plano en una cadena hexadecimal de 32 caracteres.
+--
+-- Ejemplo:
+--   MD5('1234') → 'c4ca4238a0b923820dcc509a6f75849b'
+--
+-- Características:
+--   - Siempre produce el mismo resultado para el mismo input.
+--   - Es un proceso de una sola vía: no se puede "desencriptar".
+--   - Para verificar una contraseña, se encripta lo que escribió
+--     el usuario y se compara con el hash guardado en la BD.
+--
+-- Uso en este proyecto:
+--   Al insertar un usuario, la contraseña se guarda hasheada:
+--     INSERT INTO usuarios (..., password) VALUES (..., MD5('1234'))
+--
+--   Al hacer login en PHP, se compara así:
+--     WHERE email = ? AND password = MD5(?)
+--
+-- NOTA: MD5 es simple y suficiente para un proyecto académico,
+--   pero en producción real se usa password_hash() de PHP,
+--   que es mucho más seguro.
+-- ============================================================
