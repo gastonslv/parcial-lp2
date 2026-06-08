@@ -1,9 +1,9 @@
 <?php
 // ============================================================
-// ELIMINAR AUTO (solo admin)
+// ELIMINAR USUARIO (solo admin)
 // ------------------------------------------------------------
-// Archivo de solo lógica: no muestra HTML. Borra el auto y vuelve
-// al listado.
+// Archivo de solo lógica: no muestra HTML. Borra el usuario y
+// vuelve al listado.
 // ============================================================
 
 session_start();
@@ -19,11 +19,11 @@ if ($_SESSION['rol'] != 'admin') {
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// El ID del auto a eliminar llega por la URL (?id=...).
+// El ID del usuario a eliminar llega por la URL (?id=...).
 $id = $_GET['id'];
 
-// Borramos el auto y volvemos al listado.
-eliminarAuto($conexion, $id);
+// Borramos el usuario y volvemos al listado.
+eliminarUsuario($conexion, $id);
 
 header('Location: listar.php');
 exit;
