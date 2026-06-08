@@ -73,6 +73,7 @@ if ($_SESSION['rol'] == 'admin') {
                                         <th>Fecha</th>
                                         <th>Estado</th>
                                         <th>Observaciones</th>
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -86,6 +87,21 @@ if ($_SESSION['rol'] == 'admin') {
                                         <td><?= $ventas[$i]['fecha'] ?></td>
                                         <td><?= $ventas[$i]['estado'] ?></td>
                                         <td><?= $ventas[$i]['observaciones'] ?></td>
+                                        <td>
+                                            <!-- Editar es visible para todos; el vendedor solo
+                                                 podrá editar sus propias ventas (se controla dentro de editar.php) -->
+                                            <a href="editar.php?id=<?= $ventas[$i]['id'] ?>" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <!-- Eliminar es exclusivo del admin -->
+                                            <?php if ($_SESSION['rol'] == 'admin'): ?>
+                                            <a href="eliminar.php?id=<?= $ventas[$i]['id'] ?>"
+                                               class="btn btn-danger btn-sm"
+                                               onclick="return confirm('¿Seguro que querés eliminar esta venta? Esta acción no se puede deshacer.')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                            <?php endif; ?>
+                                        </td>
                                     </tr>
                                     <?php endfor; ?>
                                 </tbody>

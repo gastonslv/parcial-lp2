@@ -480,4 +480,79 @@ function crearVenta($conexion, $idUsuario) {
         return false;
     }
 }
+
+// Busca una venta por su ID, trayendo también el nombre del cliente
+// y los datos del auto (para precargar el formulario de editar).
+// Ejemplo: editar.php?id=3 → buscamos la venta con id = 3.
+// Devuelve: un array con los datos de la venta, o vacío si no existe.
+function buscarVenta($conexion, $id) {
+    $consulta = "SELECT v.id, v.id_cliente, v.id_auto, v.id_usuario,
+                        v.estado, v.observaciones, v.fecha,
+                        c.nombre as cliente_nombre, c.apellido as cliente_apellido,
+                        a.marca, a.modelo
+                 FROM ventas v
+                 JOIN clientes c ON v.id_cliente = c.id
+                 JOIN autos a ON v.id_auto = a.id
+                 WHERE v.id = $id";
+    $rs = mysqli_query($conexion, $consulta);
+    $data = mysqli_fetch_array($rs);
+    $venta = array();
+    if (!empty($data)) {
+        $venta['id']               = $data['id'];
+        $venta['id_cliente']       = $data['id_cliente'];
+        $venta['id_auto']          = $data['id_auto'];
+        $venta['id_usuario']       = $data['id_usuario'];
+        $venta['estado']           = $data['estado'];
+        $venta['observaciones']    = $data['observaciones'];
+        $venta['fecha']            = $data['fecha'];
+        $venta['cliente_nombre']   = $data['cliente_nombre'];
+        $venta['cliente_apellido'] = $data['cliente_apellido'];
+        $venta['marca']            = $data['marca'];
+        $venta['modelo']           = $data['modelo'];
+    }
+    return $venta;
+}
+
+// Modifica una venta completa: cliente, auto, estado y observaciones.
+// La usa SOLO el admin, que puede cambiar todos los campos.
+// Devuelve: true si se actualizó bien, false si hubo error.
+function modificarVentaCompleta($conexion, $id) {
+    $consulta = "UPDATE ventas
+                 SET id_cliente    = {$_POST['id_cliente']},
+                     id_auto       = {$_POST['id_auto']},
+                     estado        = '{$_POST['estado']}',
+                     observaciones = '{$_POST['observaciones']}'
+                 WHERE id = $id";
+    if (mysqli_query($conexion, $consulta)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// Modifica solo el estado y las observaciones de una venta.
+// La usa el vendedor: no puede cambiar el cliente ni el auto asignado.
+// Devuelve: true si se actualizó bien, false si hubo error.
+function modificarVentaParcial($conexion, $id) {
+    $consulta = "UPDATE ventas
+                 SET estado        = '{$_POST['estado']}',
+                     observaciones = '{$_POST['observaciones']}'
+                 WHERE id = $id";
+    if (mysqli_query($conexion, $consulta)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// Elimina una venta por su ID (solo la usa el admin).
+// Devuelve: true si se eliminó bien, false si hubo error.
+function eliminarVenta($conexion, $id) {
+    $consulta = "DELETE FROM ventas WHERE id = $id";
+    if (mysqli_query($conexion, $consulta)) {
+        return true;
+    } else {
+        return false;
+    }
+}
 ?>
