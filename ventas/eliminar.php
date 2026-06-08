@@ -19,11 +19,14 @@ if ($_SESSION['rol'] != 'admin') {
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// El ID de la venta a eliminar llega por la URL (?id=...).
-$id = $_GET['id'];
+// Primero buscamos la venta para saber qué auto liberar.
+$venta = buscarVenta($conexion, $_GET['id']);
 
-// Borramos la venta y volvemos al listado.
-eliminarVenta($conexion, $id);
+if (!empty($venta)) {
+    // Eliminamos la venta y, en la misma función, liberamos el auto
+    // (lo dejamos como 'disponible').
+    eliminarVenta($conexion, $_GET['id'], $venta['id_auto']);
+}
 
 header('Location: listar.php');
 exit;

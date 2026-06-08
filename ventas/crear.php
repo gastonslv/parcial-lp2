@@ -22,28 +22,50 @@ $class = "info";
 // Si llegó el formulario, registramos la venta.
 // Pasamos el id del usuario logueado para que quede grabado quién la cargó.
 if (isset($_POST['btnAceptar'])) {
-    if (crearVenta($conexion, $_SESSION['idUsuario'])) {
-        $mensaje = "Venta registrada correctamente.";
-        $class = "success";
-    } else {
-        $mensaje = "Ocurrió un error al registrar la venta.";
+    // Verificamos si el auto está libre antes de crear la venta.
+    // Ejemplo: si alguien ya reservó el BMW Serie 3, no podemos
+    // crear otra venta sobre ese mismo auto.
+    $auto = buscarAuto($conexion, $_POST['id_auto']);
+    if ($auto['estado'] != 'disponible') {
+        $mensaje = "Este auto no está disponible para la venta. Estado actual: " . $auto['estado'];
         $class = "danger";
+    } else {
+        // Recién acá insertamos la venta; crearVenta() también reserva el auto.
+        if (crearVenta($conexion, $_SESSION['idUsuario'])) {
+            $mensaje = "Venta registrada correctamente.";
+            $class = "success";
+        } else {
+            $mensaje = "Ocurrió un error al registrar la venta.";
+            $class = "danger";
+        }
     }
 }
 
 // Lista de clientes para el primer select.
 $clientes = listarClientes($conexion);
 
-// Lista de autos para el segundo select, filtrada según el rol.
-// Ejemplo: un "vendedor_media" solo podrá vender autos de gama 'media'.
+// Cargamos los autos disponibles para mostrar en el formulario.
+// El admin ve todos los disponibles; el vendedor solo los de su gama.
+// Así no se ofrece un auto que ya está reservado o vendido.
 if ($_SESSION['rol'] == 'admin') {
-    $autos = listarAutos($conexion);
+    // El admin ve todos los autos que estén disponibles.
+    $consulta = "SELECT id, marca, modelo, gama FROM autos WHERE estado = 'disponible'";
 } elseif ($_SESSION['rol'] == 'vendedor_baja') {
-    $autos = listarAutosPorGama($conexion, 'baja');
+    $consulta = "SELECT id, marca, modelo, gama FROM autos WHERE estado = 'disponible' AND gama = 'baja'";
 } elseif ($_SESSION['rol'] == 'vendedor_media') {
-    $autos = listarAutosPorGama($conexion, 'media');
+    $consulta = "SELECT id, marca, modelo, gama FROM autos WHERE estado = 'disponible' AND gama = 'media'";
 } elseif ($_SESSION['rol'] == 'vendedor_alta') {
-    $autos = listarAutosPorGama($conexion, 'alta');
+    $consulta = "SELECT id, marca, modelo, gama FROM autos WHERE estado = 'disponible' AND gama = 'alta'";
+}
+$rs = mysqli_query($conexion, $consulta);
+$autosDisponibles = array();
+$i = 0;
+while ($data = mysqli_fetch_array($rs)) {
+    $autosDisponibles[$i]['id']     = $data['id'];
+    $autosDisponibles[$i]['marca']  = $data['marca'];
+    $autosDisponibles[$i]['modelo'] = $data['modelo'];
+    $autosDisponibles[$i]['gama']   = $data['gama'];
+    $i++;
 }
 ?>
 <!DOCTYPE html>
@@ -94,11 +116,12 @@ if ($_SESSION['rol'] == 'admin') {
                                     <div class="col-md-6">
                                         <label class="form-label">Auto</label>
                                         <select name="id_auto" class="form-control" required>
-                                            <option value="">-- Elegí un auto --</option>
-                                            <!-- Llenamos el select con los autos filtrados por gama -->
-                                            <?php for ($i = 0; $i < count($autos); $i++): ?>
-                                            <option value="<?= $autos[$i]['id'] ?>">
-                                                <?= $autos[$i]['marca'] . ' ' . $autos[$i]['modelo'] ?>
+                                            <option value="">Seleccione un auto...</option>
+                                            <!-- Llenamos el select solo con los autos disponibles -->
+                                            <?php for ($i = 0; $i < count($autosDisponibles); $i++): ?>
+                                            <option value="<?= $autosDisponibles[$i]['id'] ?>">
+                                                <?= $autosDisponibles[$i]['marca'] . ' ' . $autosDisponibles[$i]['modelo'] ?>
+                                                (<?= $autosDisponibles[$i]['gama'] ?>)
                                             </option>
                                             <?php endfor; ?>
                                         </select>

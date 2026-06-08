@@ -42,11 +42,12 @@ if ($_SESSION['rol'] != 'admin') {
 // Cuando se envía el formulario, guardamos los cambios según el rol.
 if (isset($_POST['btnAceptar'])) {
     if ($_SESSION['rol'] == 'admin') {
-        // El admin puede modificar todo.
-        $resultado = modificarVentaCompleta($conexion, $_GET['id']);
+        // El admin puede modificar todo. Le pasamos el id_auto para que
+        // se pueda sincronizar el estado del auto vinculado.
+        $resultado = modificarVentaCompleta($conexion, $_GET['id'], $venta['id_auto']);
     } else {
         // El vendedor solo puede modificar estado y observaciones.
-        $resultado = modificarVentaParcial($conexion, $_GET['id']);
+        $resultado = modificarVentaParcial($conexion, $_GET['id'], $venta['id_auto']);
     }
 
     if ($resultado) {

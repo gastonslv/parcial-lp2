@@ -186,10 +186,15 @@ function listarAutos($conexion) {
 // no ve las consultas de dermatología.
 // Devuelve: un array con los autos de esa gama.
 function listarAutosPorGama($conexion, $gama) {
+    // Excluimos los autos vendidos: los vendedores no necesitan ver
+    // autos que ya se vendieron, solo los que todavía pueden ofrecer.
+    // Ejemplo: si el Onix (gama baja) ya está vendido, el vendedor_baja
+    // no lo verá más en su listado.
     $consulta = "SELECT a.id, a.marca, a.modelo, a.anio, a.precio,
                         a.color, a.kilometraje, a.gama, a.estado
                  FROM autos a
-                 WHERE a.gama = '$gama'";
+                 WHERE a.gama = '$gama'
+                 AND a.estado != 'vendido'";
 
     $rs = mysqli_query($conexion, $consulta);
     $autos = array();
@@ -459,12 +464,27 @@ function listarVentasPorUsuario($conexion, $idUsuario) {
     return $ventas;
 }
 
-// Inserta una venta nueva. El id_usuario lo ponemos desde la sesión
-// (el usuario logueado), no desde el formulario, para que quede
-// registrado quién la cargó.
+// Cambia el estado de un auto en la base de datos.
+// Se llama automáticamente desde las funciones de ventas para mantener
+// sincronizado el estado del auto con el de su venta.
+// Ejemplo: actualizarEstadoAuto($con, 5, 'vendido') → el auto con id=5 pasa a vendido.
+// Devuelve: true si se actualizó bien, false si hubo error.
+function actualizarEstadoAuto($conexion, $idAuto, $nuevoEstado) {
+    $consulta = "UPDATE autos SET estado = '$nuevoEstado' WHERE id = $idAuto";
+    if (mysqli_query($conexion, $consulta)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// Inserta una venta nueva y reserva el auto vinculado. El id_usuario lo
+// ponemos desde la sesión (el usuario logueado), no desde el formulario,
+// para que quede registrado quién la cargó.
 // Recibe: la conexión y el id del usuario logueado.
 // Devuelve: true si se insertó bien, false si hubo error.
 function crearVenta($conexion, $idUsuario) {
+    // Insertamos la venta.
     $consulta = "INSERT INTO ventas (id_cliente, id_auto, id_usuario, estado, observaciones)
                  VALUES (
                      {$_POST['id_cliente']},
@@ -475,6 +495,9 @@ function crearVenta($conexion, $idUsuario) {
                  )";
 
     if (mysqli_query($conexion, $consulta)) {
+        // Si la venta se insertó bien, reservamos el auto para que nadie
+        // más pueda venderlo mientras esta venta esté activa.
+        actualizarEstadoAuto($conexion, $_POST['id_auto'], 'reservado');
         return true;
     } else {
         return false;
@@ -515,8 +538,10 @@ function buscarVenta($conexion, $id) {
 
 // Modifica una venta completa: cliente, auto, estado y observaciones.
 // La usa SOLO el admin, que puede cambiar todos los campos.
+// Además sincroniza el estado del auto según el nuevo estado de la venta.
+// Recibe también $idAuto para saber qué auto actualizar.
 // Devuelve: true si se actualizó bien, false si hubo error.
-function modificarVentaCompleta($conexion, $id) {
+function modificarVentaCompleta($conexion, $id, $idAuto) {
     $consulta = "UPDATE ventas
                  SET id_cliente    = {$_POST['id_cliente']},
                      id_auto       = {$_POST['id_auto']},
@@ -524,6 +549,24 @@ function modificarVentaCompleta($conexion, $id) {
                      observaciones = '{$_POST['observaciones']}'
                  WHERE id = $id";
     if (mysqli_query($conexion, $consulta)) {
+        // El admin puede haber cambiado el auto de la venta. $idAuto es el
+        // auto ANTERIOR (el que tenía la venta) y $_POST['id_auto'] es el NUEVO.
+        // Si son distintos, liberamos el anterior (vuelve a 'disponible')
+        // porque esta venta ya no lo ocupa.
+        // Ejemplo: la venta apuntaba al Onix y ahora apunta al Corolla:
+        // el Onix queda libre y el Corolla pasa a reservado/vendido.
+        if ($idAuto != $_POST['id_auto']) {
+            actualizarEstadoAuto($conexion, $idAuto, 'disponible');
+        }
+
+        // Sincronizamos el estado del auto que quedó vinculado a la venta (el nuevo).
+        // Si el estado de la venta es 'vendido', el auto también pasa a 'vendido';
+        // con cualquier otro estado (interesado/reservado), queda como 'reservado'.
+        if ($_POST['estado'] == 'vendido') {
+            actualizarEstadoAuto($conexion, $_POST['id_auto'], 'vendido');
+        } else {
+            actualizarEstadoAuto($conexion, $_POST['id_auto'], 'reservado');
+        }
         return true;
     } else {
         return false;
@@ -532,24 +575,36 @@ function modificarVentaCompleta($conexion, $id) {
 
 // Modifica solo el estado y las observaciones de una venta.
 // La usa el vendedor: no puede cambiar el cliente ni el auto asignado.
+// También sincroniza el estado del auto según el nuevo estado de la venta.
 // Devuelve: true si se actualizó bien, false si hubo error.
-function modificarVentaParcial($conexion, $id) {
+function modificarVentaParcial($conexion, $id, $idAuto) {
     $consulta = "UPDATE ventas
                  SET estado        = '{$_POST['estado']}',
                      observaciones = '{$_POST['observaciones']}'
                  WHERE id = $id";
     if (mysqli_query($conexion, $consulta)) {
+        // Mismo espejo que en la versión completa: 'vendido' marca el auto
+        // como vendido; cualquier otro estado lo deja como reservado.
+        if ($_POST['estado'] == 'vendido') {
+            actualizarEstadoAuto($conexion, $idAuto, 'vendido');
+        } else {
+            actualizarEstadoAuto($conexion, $idAuto, 'reservado');
+        }
         return true;
     } else {
         return false;
     }
 }
 
-// Elimina una venta por su ID (solo la usa el admin).
+// Elimina una venta y libera el auto vinculado (lo pone como disponible).
+// La usa SOLO el admin. Recibe $idAuto para saber qué auto liberar.
+// Ejemplo: se cancela la compra del Onix → el Onix vuelve a 'disponible'.
 // Devuelve: true si se eliminó bien, false si hubo error.
-function eliminarVenta($conexion, $id) {
+function eliminarVenta($conexion, $id, $idAuto) {
     $consulta = "DELETE FROM ventas WHERE id = $id";
     if (mysqli_query($conexion, $consulta)) {
+        // Al eliminar la venta, el auto queda libre nuevamente.
+        actualizarEstadoAuto($conexion, $idAuto, 'disponible');
         return true;
     } else {
         return false;

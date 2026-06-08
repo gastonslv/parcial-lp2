@@ -97,7 +97,19 @@ if ($_SESSION['rol'] == 'admin') {
                                         <td><?= $autos[$i]['color'] ?></td>
                                         <td><?= $autos[$i]['kilometraje'] ?></td>
                                         <td><?= $autos[$i]['gama'] ?></td>
-                                        <td><?= $autos[$i]['estado'] ?></td>
+                                        <td>
+                                            <?php
+                                            // Mostramos el estado del auto con un color según su situación:
+                                            // verde = disponible, amarillo = reservado, rojo = vendido.
+                                            $badgeEstado = 'secondary'; // color por defecto
+                                            if ($autos[$i]['estado'] == 'disponible') $badgeEstado = 'success';
+                                            if ($autos[$i]['estado'] == 'reservado')  $badgeEstado = 'warning';
+                                            if ($autos[$i]['estado'] == 'vendido')    $badgeEstado = 'danger';
+                                            ?>
+                                            <span class="badge bg-<?= $badgeEstado ?>">
+                                                <?= $autos[$i]['estado'] ?>
+                                            </span>
+                                        </td>
                                         <td>
                                             <!-- Editar y eliminar solo para el admin -->
                                             <?php if ($_SESSION['rol'] == 'admin'): ?>
