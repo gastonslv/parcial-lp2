@@ -7,7 +7,7 @@
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
 // Página exclusiva del admin.
@@ -19,11 +19,10 @@ if ($_SESSION['rol'] != 'admin') {
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// Variables para el mensaje de resultado.
 $mensaje = "";
 $class = "info";
 
-// El ID del auto a editar llega por la URL (?id=...).
+// El ID del auto a editar llega por la URL (?id=).
 $id = $_GET['id'];
 
 // Si llegó el formulario, guardamos los cambios.

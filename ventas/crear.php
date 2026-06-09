@@ -9,18 +9,16 @@
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// Variables para el mensaje de resultado.
 $mensaje = "";
 $class = "info";
 
-// Si llegó el formulario, registramos la venta.
-// Pasamos el id del usuario logueado para que quede grabado quién la cargó.
+// Pasamos el id del usuario logueado para que quede guardado quién lo cargó.
 if (isset($_POST['btnAceptar'])) {
     // Verificamos si el auto está libre antes de crear la venta.
     // Ejemplo: si alguien ya reservó el BMW Serie 3, no podemos
@@ -48,7 +46,6 @@ $clientes = listarClientes($conexion);
 // El admin ve todos los disponibles; el vendedor solo los de su gama.
 // Así no se ofrece un auto que ya está reservado o vendido.
 if ($_SESSION['rol'] == 'admin') {
-    // El admin ve todos los autos que estén disponibles.
     $consulta = "SELECT id, marca, modelo, gama FROM autos WHERE estado = 'disponible'";
 } elseif ($_SESSION['rol'] == 'vendedor_baja') {
     $consulta = "SELECT id, marca, modelo, gama FROM autos WHERE estado = 'disponible' AND gama = 'baja'";
@@ -105,7 +102,7 @@ while ($data = mysqli_fetch_array($rs)) {
                                         <label class="form-label">Cliente</label>
                                         <select name="id_cliente" class="form-control" required>
                                             <option value="">-- Elegí un cliente --</option>
-                                            <!-- Llenamos el select con todos los clientes -->
+                                            <!-- Cargamos el select con todos los clientes -->
                                             <?php for ($i = 0; $i < count($clientes); $i++): ?>
                                             <option value="<?= $clientes[$i]['id'] ?>">
                                                 <?= $clientes[$i]['nombre'] . ' ' . $clientes[$i]['apellido'] ?>
@@ -117,7 +114,7 @@ while ($data = mysqli_fetch_array($rs)) {
                                         <label class="form-label">Auto</label>
                                         <select name="id_auto" class="form-control" required>
                                             <option value="">Seleccione un auto...</option>
-                                            <!-- Llenamos el select solo con los autos disponibles -->
+                                            <!-- Cargamos el select solo con los autos disponibles -->
                                             <?php for ($i = 0; $i < count($autosDisponibles); $i++): ?>
                                             <option value="<?= $autosDisponibles[$i]['id'] ?>">
                                                 <?= $autosDisponibles[$i]['marca'] . ' ' . $autosDisponibles[$i]['modelo'] ?>
@@ -143,8 +140,6 @@ while ($data = mysqli_fetch_array($rs)) {
                                         <textarea name="observaciones" class="form-control" rows="3"></textarea>
                                     </div>
                                 </div>
-
-                                <!-- Botones al final: Aceptar y Cancelar -->
                                 <button type="submit" name="btnAceptar" value="aceptar" class="btn btn-primary">
                                     <i class="fas fa-check-circle"></i> Aceptar
                                 </button>

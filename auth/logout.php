@@ -7,11 +7,14 @@
 // incluyen este archivo cuando detectan que no hay una sesión activa.
 // ============================================================
 
-session_start();   // Reanudamos la sesión para poder borrarla
+session_start();   // Cargamos la sesión para poder borrarla
 session_unset();   // Vaciamos todas las variables de sesión
-session_destroy(); // Destruimos la sesión por completo
+session_destroy(); // Destrucción de la sesión
 
-// Redirigimos a la página de login.
+// Redirigimos a la página de login
 header('Location: login.php');
-exit; // Cortamos la ejecución para que no siga corriendo nada más
+// Siempre que se use header, ponemos exit para cortar el flujo de ejecución de
+// PHP. Es como el switch con los break. Esto se hace para no causar comportamientos
+// inesperados por parte de PHP.
+exit;
 ?>

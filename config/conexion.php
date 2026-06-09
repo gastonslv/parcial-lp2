@@ -25,9 +25,8 @@ function conexion() {
 // ============================================================
 
 // Busca un usuario por email y contraseña para el login.
-// Recibe: la conexión, el email y la contraseña en texto plano.
 // Devuelve: un array con los datos del usuario si las credenciales
-//           son correctas, o un array vacío si no coinciden.
+// son correctas, o un array vacío si no coinciden.
 function login($conexion, $email, $contra) {
     // Comparamos la contraseña escrita (encriptada con MD5) contra
     // la que está guardada en la BD, que también está en MD5.
@@ -484,7 +483,6 @@ function actualizarEstadoAuto($conexion, $idAuto, $nuevoEstado) {
 // Recibe: la conexión y el id del usuario logueado.
 // Devuelve: true si se insertó bien, false si hubo error.
 function crearVenta($conexion, $idUsuario) {
-    // Insertamos la venta.
     $consulta = "INSERT INTO ventas (id_cliente, id_auto, id_usuario, estado, observaciones)
                  VALUES (
                      {$_POST['id_cliente']},

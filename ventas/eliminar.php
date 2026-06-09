@@ -7,7 +7,7 @@
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
 // Eliminar ventas es exclusivo del admin.
@@ -23,8 +23,7 @@ $conexion = conexion();
 $venta = buscarVenta($conexion, $_GET['id']);
 
 if (!empty($venta)) {
-    // Eliminamos la venta y, en la misma función, liberamos el auto
-    // (lo dejamos como 'disponible').
+    // Eliminamos la venta y liberamos el auto (disponible) en la misma función.
     eliminarVenta($conexion, $_GET['id'], $venta['id_auto']);
 }
 

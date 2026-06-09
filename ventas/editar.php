@@ -8,18 +8,15 @@
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// Variables para el mensaje de resultado.
 $mensaje = "";
 $class = "info";
 
-// Buscamos la venta por el ID que llega por GET.
-// Ejemplo: editar.php?id=3 → buscamos la venta con id = 3.
 $venta = buscarVenta($conexion, $_GET['id']);
 
 // Si no existe la venta, volvemos al listado.
@@ -30,8 +27,7 @@ if (empty($venta)) {
 
 // Si es vendedor, verificamos que la venta sea suya.
 // Ejemplo: si idUsuario en sesión es 2 (Laura) y la venta tiene
-// id_usuario = 3 (Diego), Laura no debería poder editarla aunque
-// tenga la URL.
+// id_usuario = 3 (Diego), Laura no debería poder editarla
 if ($_SESSION['rol'] != 'admin') {
     if ($venta['id_usuario'] != $_SESSION['idUsuario']) {
         header('Location: listar.php');
@@ -39,7 +35,7 @@ if ($_SESSION['rol'] != 'admin') {
     }
 }
 
-// Cuando se envía el formulario, guardamos los cambios según el rol.
+// Guardamos los cambios según el rol.
 if (isset($_POST['btnAceptar'])) {
     if ($_SESSION['rol'] == 'admin') {
         // El admin puede modificar todo. Le pasamos el id_auto para que
@@ -58,12 +54,12 @@ if (isset($_POST['btnAceptar'])) {
         $class = "danger";
     }
 
-    // Volvemos a buscar la venta para mostrar los datos ya actualizados.
+    // Volvemos a buscar la venta para mostrar los datos actualizados.
     $venta = buscarVenta($conexion, $_GET['id']);
 }
 
 // Si el que edita es admin, necesitamos las listas para los select
-// de cliente y auto. El admin elige cualquier auto (todas las gamas).
+// de cliente y auto. El admin elige cualquier auto.
 if ($_SESSION['rol'] == 'admin') {
     $clientes = listarClientes($conexion);
     $autos = listarAutos($conexion);
@@ -161,7 +157,6 @@ if ($_SESSION['rol'] == 'admin') {
                                     <textarea name="observaciones" class="form-control" rows="3"><?= $venta['observaciones'] ?></textarea>
                                 </div>
 
-                                <!-- Botones -->
                                 <button type="submit" name="btnAceptar" value="aceptar" class="btn btn-primary">
                                     <i class="fas fa-check-circle"></i> Aceptar
                                 </button>

@@ -7,7 +7,7 @@
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
 // Página exclusiva del admin.
@@ -19,7 +19,7 @@ if ($_SESSION['rol'] != 'admin') {
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// El ID del auto a eliminar llega por la URL (?id=...).
+// El ID del auto a eliminar llega por la URL (?id=).
 $id = $_GET['id'];
 
 // Borramos el auto y volvemos al listado.

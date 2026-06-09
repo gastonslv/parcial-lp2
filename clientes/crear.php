@@ -7,17 +7,16 @@
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// Variables para el mensaje de resultado.
 $mensaje = "";
 $class = "info";
 
-// Si llegó el formulario, intentamos crear el cliente.
+// Intentamos crear el auto.
 if (isset($_POST['btnAceptar'])) {
     if (crearCliente($conexion)) {
         $mensaje = "Cliente creado correctamente.";
@@ -80,8 +79,6 @@ if (isset($_POST['btnAceptar'])) {
                                         <input type="email" name="email" class="form-control">
                                     </div>
                                 </div>
-
-                                <!-- Botones al final: Aceptar y Cancelar -->
                                 <button type="submit" name="btnAceptar" value="aceptar" class="btn btn-primary">
                                     <i class="fas fa-check-circle"></i> Aceptar
                                 </button>

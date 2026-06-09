@@ -6,10 +6,10 @@
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
-// Esta página es exclusiva del admin: si no lo es, lo sacamos.
+// Esta página es exclusiva para el admin: si no lo es, lo sacamos.
 if ($_SESSION['rol'] != 'admin') {
     header('Location: ../index.php');
     exit;
@@ -18,11 +18,10 @@ if ($_SESSION['rol'] != 'admin') {
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// Variables para el mensaje de resultado.
 $mensaje = "";
 $class = "info";
 
-// Si llegó el formulario, intentamos crear el auto.
+// Intentamos crear el auto.
 if (isset($_POST['btnAceptar'])) {
     if (crearAuto($conexion)) {
         $mensaje = "Auto creado correctamente.";
@@ -64,7 +63,6 @@ if (isset($_POST['btnAceptar'])) {
                     <div class="card mb-4">
                         <div class="card-header"><i class="fas fa-plus me-1"></i> Datos del Auto</div>
                         <div class="card-body">
-                            <!-- El formulario se envía a sí mismo (action vacío) -->
                             <form method="post" action="">
                                 <div class="row mb-3">
                                     <div class="col-md-6">
@@ -112,8 +110,6 @@ if (isset($_POST['btnAceptar'])) {
                                         </select>
                                     </div>
                                 </div>
-
-                                <!-- Botones siempre al final: Aceptar y Cancelar -->
                                 <button type="submit" name="btnAceptar" value="aceptar" class="btn btn-primary">
                                     <i class="fas fa-check-circle"></i> Aceptar
                                 </button>

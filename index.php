@@ -16,7 +16,7 @@ if (empty($_SESSION['idUsuario'])) {
 
 // Redirigimos según el rol del usuario logueado:
 //   - admin       → gestión de usuarios
-//   - vendedor_*  → listado de autos (que verá filtrado por su gama)
+//   - vendedores  → listado de autos (filtrado por gama)
 if ($_SESSION['rol'] == 'admin') {
     header('Location: usuarios/listar.php');
     exit;

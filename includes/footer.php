@@ -1,6 +1,5 @@
 <!-- ============================================================
-     PIE DE PÁGINA (footer) — cierra el layout del dashboard y carga
-     los scripts de JavaScript de SB Admin (Bootstrap + scripts propios).
+     FOOTER + carga de la plantilla de BOOTSTRAP
      ============================================================ -->
         <footer class="py-4 bg-light mt-auto">
             <div class="container-fluid px-4">
@@ -10,7 +9,7 @@
             </div>
         </footer>
 
-<!-- Scripts de la plantilla: Bootstrap (para dropdowns, etc.) y scripts.js -->
+<!-- Scripts de la plantilla: Bootstrap y scripts.js -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script src="../js/scripts.js"></script>
 <!-- Librería que activa el buscador/paginado de las tablas (datatablesSimple) -->

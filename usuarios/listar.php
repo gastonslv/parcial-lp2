@@ -6,10 +6,9 @@
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
-// Página exclusiva del admin.
 if ($_SESSION['rol'] != 'admin') {
     header('Location: ../index.php');
     exit;
@@ -18,11 +17,9 @@ if ($_SESSION['rol'] != 'admin') {
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// Variables para el mensaje de resultado.
 $mensaje = "";
 $class = "info";
 
-// Traemos todos los usuarios.
 $usuarios = listarUsuarios($conexion);
 ?>
 <!DOCTYPE html>
@@ -73,7 +70,6 @@ $usuarios = listarUsuarios($conexion);
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Recorremos el array de usuarios con un for clásico -->
                                     <?php for ($i = 0; $i < count($usuarios); $i++): ?>
                                     <tr>
                                         <td><?= $usuarios[$i]['id'] ?></td>

@@ -7,20 +7,19 @@
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, cerramos sesión y volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
 // Archivo con la conexión y las funciones de autos.
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// Variables para el mensaje de resultado (lo usa, por ejemplo, eliminar.php).
 $mensaje = "";
 $class = "info";
 
 // Filtramos los autos según el rol del usuario logueado.
 // Ejemplo: un "vendedor_baja" solo verá los autos de gama 'baja'
-// (Onix, Sandero, etc.); el admin los ve todos.
+// (Onix, Sandero, etc.); el admin los ve a todos.
 if ($_SESSION['rol'] == 'admin') {
     $autos = listarAutos($conexion);
 } elseif ($_SESSION['rol'] == 'vendedor_baja') {
@@ -54,7 +53,7 @@ if ($_SESSION['rol'] == 'admin') {
                         <li class="breadcrumb-item active">Autos</li>
                     </ol>
 
-                    <!-- Mensaje de resultado (éxito o error) -->
+                    <!-- Mensaje de resultado -->
                     <?php if ($mensaje != ""): ?>
                         <div class="alert alert-<?= $class ?>"><?= $mensaje ?></div>
                     <?php endif; ?>
@@ -86,7 +85,6 @@ if ($_SESSION['rol'] == 'admin') {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Recorremos el array de autos con un for clásico -->
                                     <?php for ($i = 0; $i < count($autos); $i++): ?>
                                     <tr>
                                         <td><?= $autos[$i]['id'] ?></td>
@@ -99,7 +97,7 @@ if ($_SESSION['rol'] == 'admin') {
                                         <td><?= $autos[$i]['gama'] ?></td>
                                         <td>
                                             <?php
-                                            // Mostramos el estado del auto con un color según su situación:
+                                            // Mostramos el estado del auto con un color:
                                             // verde = disponible, amarillo = reservado, rojo = vendido.
                                             $badgeEstado = 'secondary'; // color por defecto
                                             if ($autos[$i]['estado'] == 'disponible') $badgeEstado = 'success';

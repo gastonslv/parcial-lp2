@@ -7,13 +7,12 @@
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// Variables para el mensaje de resultado.
 $mensaje = "";
 $class = "info";
 
@@ -69,7 +68,6 @@ $clientes = listarClientes($conexion);
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Recorremos el array de clientes con un for clásico -->
                                     <?php for ($i = 0; $i < count($clientes); $i++): ?>
                                     <tr>
                                         <td><?= $clientes[$i]['id'] ?></td>

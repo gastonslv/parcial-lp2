@@ -7,13 +7,13 @@
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// El ID del cliente a eliminar llega por la URL (?id=...).
+// URL
 $id = $_GET['id'];
 
 // Borramos el cliente y volvemos al listado.

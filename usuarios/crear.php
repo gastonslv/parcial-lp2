@@ -2,15 +2,14 @@
 // ============================================================
 // CREAR USUARIO (solo admin)
 // ------------------------------------------------------------
-// Muestra el formulario y, al enviarlo, inserta el usuario nuevo.
-// La contraseña se guarda encriptada con MD5 (lo hace crearUsuario).
+// Muestra el formulario e inserta el usuario nuevo.
+// La contraseña se guarda encriptada con MD5.
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
-// Página exclusiva del admin.
 if ($_SESSION['rol'] != 'admin') {
     header('Location: ../index.php');
     exit;
@@ -19,11 +18,11 @@ if ($_SESSION['rol'] != 'admin') {
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// Variables para el mensaje de resultado.
+
 $mensaje = "";
 $class = "info";
 
-// Si llegó el formulario, intentamos crear el usuario.
+// Intentamos crear el usuario.
 if (isset($_POST['btnAceptar'])) {
     if (crearUsuario($conexion)) {
         $mensaje = "Usuario creado correctamente.";
@@ -97,8 +96,6 @@ if (isset($_POST['btnAceptar'])) {
                                         </select>
                                     </div>
                                 </div>
-
-                                <!-- Botones al final: Aceptar y Cancelar -->
                                 <button type="submit" name="btnAceptar" value="aceptar" class="btn btn-primary">
                                     <i class="fas fa-check-circle"></i> Aceptar
                                 </button>

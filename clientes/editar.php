@@ -7,20 +7,19 @@
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// Variables para el mensaje de resultado.
 $mensaje = "";
 $class = "info";
 
-// El ID del cliente a editar llega por la URL (?id=...).
+// URL
 $id = $_GET['id'];
 
-// Si llegó el formulario, guardamos los cambios.
+// Guardamos los cambios.
 if (isset($_POST['btnAceptar'])) {
     if (modificarCliente($conexion, $id)) {
         $mensaje = "Cliente modificado correctamente.";
@@ -86,8 +85,6 @@ $cliente = buscarCliente($conexion, $id);
                                         <input type="email" name="email" class="form-control" value="<?= $cliente['email'] ?>">
                                     </div>
                                 </div>
-
-                                <!-- Botones al final: Aceptar y Cancelar -->
                                 <button type="submit" name="btnAceptar" value="aceptar" class="btn btn-primary">
                                     <i class="fas fa-check-circle"></i> Aceptar
                                 </button>

@@ -8,10 +8,9 @@
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
-// Página exclusiva del admin.
 if ($_SESSION['rol'] != 'admin') {
     header('Location: ../index.php');
     exit;
@@ -20,14 +19,13 @@ if ($_SESSION['rol'] != 'admin') {
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// Variables para el mensaje de resultado.
 $mensaje = "";
 $class = "info";
 
-// El ID del usuario a editar llega por la URL (?id=...).
+// URL
 $id = $_GET['id'];
 
-// Si llegó el formulario, guardamos los cambios.
+// Guardamos los cambios.
 if (isset($_POST['btnAceptar'])) {
     if (modificarUsuario($conexion, $id)) {
         $mensaje = "Usuario modificado correctamente.";
@@ -99,8 +97,6 @@ $usuario = buscarUsuario($conexion, $id);
                                         </select>
                                     </div>
                                 </div>
-
-                                <!-- Botones al final: Aceptar y Cancelar -->
                                 <button type="submit" name="btnAceptar" value="aceptar" class="btn btn-primary">
                                     <i class="fas fa-check-circle"></i> Aceptar
                                 </button>

@@ -7,13 +7,12 @@
 // ============================================================
 
 session_start();
-// Portero: si no hay sesión activa, volvemos al login.
+// Si no hay sesión activa, volvemos al login.
 if (empty($_SESSION['idUsuario'])) { require_once '../auth/logout.php'; }
 
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// Variables para el mensaje de resultado.
 $mensaje = "";
 $class = "info";
 
@@ -77,7 +76,6 @@ if ($_SESSION['rol'] == 'admin') {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Recorremos el array de ventas con un for clásico -->
                                     <?php for ($i = 0; $i < count($ventas); $i++): ?>
                                     <tr>
                                         <td><?= $ventas[$i]['id'] ?></td>
@@ -88,8 +86,7 @@ if ($_SESSION['rol'] == 'admin') {
                                         <td><?= $ventas[$i]['estado'] ?></td>
                                         <td><?= $ventas[$i]['observaciones'] ?></td>
                                         <td>
-                                            <!-- Editar es visible para todos; el vendedor solo
-                                                 podrá editar sus propias ventas (se controla dentro de editar.php) -->
+                                            <!-- Editar es visible para todos; el vendedor solo podrá editar sus propias ventas -->
                                             <a href="editar.php?id=<?= $ventas[$i]['id'] ?>" class="btn btn-warning btn-sm">
                                                 <i class="fas fa-edit"></i>
                                             </a>

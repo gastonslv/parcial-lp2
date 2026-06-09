@@ -8,17 +8,22 @@
 // Esta página NO usa el layout del dashboard (no tiene sidebar).
 // ============================================================
 
+// En PHP, el protocolo HTTP (HyperText Transfer Protocol) es sin memoria. Cada
+// vez que el navegador hace un request al servidor, el servidor no recuerda
+// quien es el que hace el request. Esta función es la que activa el mecanismo
+// de sesiones para solucionar eso.
+// Crea o retoma una sesión a través de cookies en el navegador, y habilita el
+// array $_SESSION para poder leer los valores de los usuarios del sistema.
 session_start();
 
 // Incluimos el archivo con la conexión y la función login().
 require_once '../config/conexion.php';
 $conexion = conexion();
 
-// Variables para mostrar mensajes de error en pantalla.
 $mensaje = "";
 $class = "danger";
 
-// Si llegó el formulario (botón Aceptar), intentamos el login.
+// Intentamos el login si se completó el formulario.
 if (isset($_POST['btnAceptar'])) {
     $email = $_POST['email'];
     $contra = $_POST['password'];
@@ -33,7 +38,7 @@ if (isset($_POST['btnAceptar'])) {
         $_SESSION['apellido']  = $usuario['apellido'];
         $_SESSION['rol']       = $usuario['rol'];
 
-        // Entramos al sistema; index.php redirige según el rol.
+        // Entramos al sistema; index.php redirige dependiendo el rol.
         header('Location: ../index.php');
         exit;
     } else {
@@ -48,7 +53,7 @@ if (isset($_POST['btnAceptar'])) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Login - Concesionaria</title>
-    <!-- Estilos de SB Admin (ruta relativa desde auth/) -->
+    <!-- Estilos de la plantilla -->
     <link href="../css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
